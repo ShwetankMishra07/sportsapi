@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sports News</title>
+
+  <style>
+  body {
+  font-family: Arial;
+  margin: 0;
+  padding: 20px;
+  background: linear-gradient(135deg, #b3e5fc, #e1f5fe);
+}
+
+.main {
+  max-width: 1200px;
+  margin: auto;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.search-box {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.search-box input {
+  padding: 8px;
+  width: 250px;
+}
+
+.search-box button {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+#news-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
+}
+
+.card {
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0, 123, 255, 0.15);
+  transition: 0.3s;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 25px rgba(0, 123, 255, 0.25);
+}
+
+.card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.card a {
+  margin-top: 10px;
+  text-decoration: none;
+  color: #007bff;
+  font-weight: 500;
+}
+  </style>
+</head>
+
+<body>
+
+  
+  <div class="main">
+    <h1>Sports News</h1>
+
+  </div>
+  <div class="search-box">
+     <input type="text" id="search" placeholder="Search sport">
+     <button onclick="searchNews()">Search</button>
+  </div>
+ 
+  <div id="news-container"></div>
+
+  <script>
+    
+    const newsContainer = document.getElementById("news-container");
+    newsContainer.innerHTML = "<h2></h2>";
+    function searchNews() {
+  const query = document.getElementById("search").value.trim();
+  const newsContainer = document.getElementById("news-container");
+
+  if (query === "") {
+    alert("Please enter something to search");
+    return;
+  }
+
+  newsContainer.innerHTML = "<h2>Loading...</h2>";
+
+  
+  fetch(`https://gnews.io/api/v4/search?q=${query}+sports&lang=en&country=in&apikey=${apiKey}`)
+  fetch(`/api/news?q=${query}`)
+    .then(response => response.json())
+    .then(data => {
+      newsContainer.innerHTML = "";
+
+      if (!data.articles || data.articles.length === 0) {
+        newsContainer.innerHTML = "<h2>No results found</h2>";
+        return;
+      }
+
+      data.articles.forEach(article => {
+        const card = document.createElement("div");
+        card.classList.add("card");
+
+        card.innerHTML = `
+          <h3>${article.title}</h3>
+          <img src="${article.image || ''}" alt="">
+          <p>${article.description || ''}</p>
+          <a href="${article.url}" target="_blank">Read More</a>
+        `;
+
+        newsContainer.appendChild(card);
+      });
+    })
+    .catch(error => {
+      console.log("Search Error:", error);
+      newsContainer.innerHTML = "<h2>Error fetching news</h2>";
+    });
+}
+  </script>
+
+</body>
+</html>
